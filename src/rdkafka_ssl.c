@@ -712,6 +712,7 @@ static int rd_kafka_ssl_set_certs (rd_kafka_t *rk, SSL_CTX *ctx,
                                    char *errstr, size_t errstr_size) {
         rd_bool_t check_pkey = rd_false;
         int r;
+        int x509_flags = 0;
 
         /*
          * ssl_ca, ssl.ca.location, or Windows cert root store,
@@ -768,7 +769,11 @@ static int rd_kafka_ssl_set_certs (rd_kafka_t *rk, SSL_CTX *ctx,
                                         "failed: ignoring");
                 }
         }
-
+        
+        if (rk->rk_conf.ssl.allow_partial_chain) {
+                x509_flags |= X509_V_FLAG_PARTIAL_CHAIN;
+        }
+        
         if (rk->rk_conf.ssl.crl_location) {
                 rd_kafka_dbg(rk, SECURITY, "SSL",
                              "Loading CRL from file %s",
@@ -788,11 +793,14 @@ static int rd_kafka_ssl_set_certs (rd_kafka_t *rk, SSL_CTX *ctx,
                 rd_kafka_dbg(rk, SECURITY, "SSL",
                              "Enabling CRL checks");
 
-                X509_STORE_set_flags(SSL_CTX_get_cert_store(ctx),
-                                     X509_V_FLAG_CRL_CHECK);
+                x509_flags |= X509_V_FLAG_CRL_CHECK;
         }
 
 
+        if (x509_flags != 0) {
+                X509_STORE_set_flags(SSL_CTX_get_cert_store(ctx), x509_flags);
+        }                
+        
         /*
          * ssl_cert, ssl.certificate.location and ssl.certificate.pem
          */

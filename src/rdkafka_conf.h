@@ -239,6 +239,9 @@ struct rd_kafka_conf_s {
                                        const char *buf, size_t size,
                                        char *errstr, size_t errstr_size,
                                        void *opaque);
+#if OPENSSL_VERSION_NUMBER >= 0x1000200fL
+                int   allow_partial_chain;
+#endif
         } ssl;
 #endif
 

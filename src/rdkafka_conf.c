@@ -689,6 +689,12 @@ static const struct rd_kafka_property rd_kafka_properties[] = {
                         { RD_KAFKA_SSL_ENDPOINT_ID_HTTPS, "https" }
                 }
         },
+        { _RK_GLOBAL, "ssl.allow_partial_chain", _RK_C_BOOL,
+          _RK(ssl.allow_partial_chain),
+          "Allow partial chains (non self-signed intermediate CA certs) "
+          "in the trust store file (see openssl's X509_V_FLAG_PARTIAL_CHAIN flag)",
+          0, 1, 0
+        },
 #endif
         { _RK_GLOBAL, "ssl.certificate.verify_cb", _RK_C_PTR,
           _RK(ssl.cert_verify_cb),
